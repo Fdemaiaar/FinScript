@@ -1,4 +1,4 @@
-# FinLang – Gramática EBNF
+# Valuation# – Gramática EBNF
 
 ## Visão Geral
 Um programa em FinLang é uma sequência de statements (declarações, expressões, relatórios etc.), podendo incluir comentários. Cada bloco ou declaração possui sua sintaxe própria, delimitada por chaves {} e finalizada por ponto-e-vírgula ; onde indicado.
