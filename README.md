@@ -169,7 +169,7 @@ digit        ::= "0"… "9"
 
 ## Exemplo de Script da Linguagem:
 ```bash
-// Exemplo de script V# com comentários explicativos
+// Exemplo de script V# com variáveis genéricas, condicionais e laços
 
 // 1. Definição de entidade e classes de ações
 entity MyCorp {
@@ -199,35 +199,51 @@ cap_table MyCorp {
 
 // 3. Ofertas de Equity e Dívida
 deal IPO1 {
-  type             = Equity;              // Tipo da oferta
-  issuer           = MyCorp;              // Entidade emissora
-  amount           = 100000000;           // Montante total da oferta
-  price_per_share  = 10.0;                // Preço por ação
-  settlement_date  = 2025-06-15;          // Data de liquidação
-  underwriters     = ["BankA", "BankB"];  // Coordenadores da oferta
+  type             = Equity;              
+  issuer           = MyCorp;              
+  amount           = 100000000;           
+  price_per_share  = 10.0;                
+  settlement_date  = 2025-06-15;          
+  underwriters     = ["BankA", "BankB"];  
 }
 
 debt_instrument Bond2025 {
-  issuer       = MyCorp;                  // Entidade emissora da dívida
-  principal    = 200000000;               // Valor principal emitido
-  coupon_rate  = 0.075;                   // Taxa de cupom anual (7.5%)
-  maturity     = 2030-05-01;              // Data de vencimento
-  payment_freq = semiannual;              // Frequência de pagamentos
+  issuer       = MyCorp;                  
+  principal    = 200000000;               
+  coupon_rate  = 0.075;                   
+  maturity     = 2030-05-01;              
+  payment_freq = semiannual;              
 }
 
-// 4. Cálculo de métricas financeiras
-npv1  = npv(0.10, [-100000000, 30000000, 35000000, 40000000]);  // NPV com taxa de 10%
-irr1  = irr([-100000000, 30000000, 35000000, 40000000]);        // IRR do fluxo de caixa
-wacc1 = wacc(400000000, 200000000, 0.10, 0.075);                // WACC com equity/debt e custos
+// 4. Declaração de variáveis genéricas
+var npv1  = npv(0.10, [-100000000, 30000000, 35000000, 40000000]);  // NPV com taxa de 10%
+var irr1  = irr([-100000000, 30000000, 35000000, 40000000]);        // IRR do fluxo de caixa
+var wacc1 = wacc(400000000, 200000000, 0.10, 0.075);                // WACC com equity/debt e custos
 
-// 5. Impressão dos resultados no console
-print(npv1);  // Exibe o valor presente líquido
-print(irr1);  // Exibe a taxa interna de retorno
-print(wacc1); // Exibe o custo médio ponderado de capital
+// 5. Condicional: avaliar se o NPV é positivo
+if (npv1 > 0) {
+  print("NPV positivo; proceed with deal");  
+} else {
+  print("NPV negativo; review assumptions");  
+}
+
+// 6. Loop while: simular NPV para diferentes taxas de desconto
+var rate = 0.05;                          // taxa inicial de 5%
+while (rate <= 0.15) {                    // até 15%
+  var npv_loop = npv(rate, [-100000000, 30000000, 35000000, 40000000]);
+  print("Taxa:", rate);                  // exibe a taxa corrente
+  print("NPV:", npv_loop);               // exibe o NPV calculado
+  rate = rate + 0.01;                    // incremento de 1 ponto percentual
+}
+
+// 7. Impressão final de métricas
+print("IRR final:", irr1);               
+print("WACC final:", wacc1);             
 ```
 * **O que o script faz**:
-  - Define uma entidade MyCorp com suas classes de ações.
-  - Monta a capitalização em cap_table.
-  - Registra uma oferta de equity (deal IPO1) e um instrumento de dívida (Bond2025
-  - Calcula NPV, IRR e WACC usando listas de fluxos de caixa e parâmetros estáticos
-  - Exibe os resultados no console com print().
+  - Declara a entidade MyCorp e sua cap table.
+  - Registra uma oferta de equity (IPO1) e um título de dívida (Bond2025).
+  - Calcula npv1, irr1 e wacc1.
+  - Usa var para armazenar resultados e um if para checar o sinal do NPV.
+  - Executa um while para simular NPV em taxas de 5% até 15%.
+  - Imprime no console todas as métricas finais.
