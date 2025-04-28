@@ -1,7 +1,7 @@
-# Valuation# – Gramática EBNF
+# Valuation# (V#) – Gramática EBNF
 
 ## Visão Geral
-Um programa em FinLang é uma sequência de statements (declarações, expressões, relatórios etc.), podendo incluir comentários. Cada bloco ou declaração possui sua sintaxe própria, delimitada por chaves {} e finalizada por ponto-e-vírgula ; onde indicado.
+Um programa em V# é uma sequência de statements (declarações, expressões, relatórios etc.), podendo incluir comentários. Cada bloco ou declaração possui sua sintaxe própria, delimitada por chaves {} e finalizada por ponto-e-vírgula ; onde indicado.
 * **Programa** : sequência de declarações e comandos.
 * **Blocos** : delimitados por { … }.
 * **Listas** : delimitadas por [ … ].
@@ -164,7 +164,7 @@ digit        ::= "0"… "9"
 
 ## Exemplo de Script da Linguagem:
 ```bash
-// Exemplo de script FinLang com comentários explicativos
+// Exemplo de script V# com comentários explicativos
 
 // 1. Definição de entidade e classes de ações
 entity MyCorp {
