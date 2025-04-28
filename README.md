@@ -21,7 +21,12 @@ Um programa em V# é uma sequência de statements (declarações, expressões, r
     | <valuation_decl>      (* valuation NPV/IRR/WACC *)
     | <metric_decl>         (* métricas financeiras *)
     | <print_stmt>          (* comando de impressão *)
-                         (* comentário de bloco *)
+
+<var_decl> ::= "var" <ident> [ "=" <expression> ] ";"
+<if_stmt>  ::= "if" "(" <expression> ")" <block> [ "else" <block> ]
+<block>    ::= "{" { <statement> } "}"
+<while_stmt> ::= "while" "(" <expression> ")" <block>
+<for_stmt> ::= "for" "(" [ <var_decl> | <expr_stmt> ] [ <expression> ] ";" [ <expression> ] ")" <block>
 ```
 
 2. Declaração de Entidades
