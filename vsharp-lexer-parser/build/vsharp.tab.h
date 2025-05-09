@@ -57,27 +57,45 @@ extern int yydebug;
     IDENTIFIER = 258,              /* IDENTIFIER  */
     NUMBER = 259,                  /* NUMBER  */
     STRING = 260,                  /* STRING  */
-    ENTITY = 261,                  /* ENTITY  */
-    CAP_TABLE = 262,               /* CAP_TABLE  */
-    DEAL = 263,                    /* DEAL  */
-    DEBT_INSTRUMENT = 264,         /* DEBT_INSTRUMENT  */
-    COST_OF_DEBT = 265,            /* COST_OF_DEBT  */
-    COST_OF_EQUITY = 266,          /* COST_OF_EQUITY  */
-    VALUATION = 267,               /* VALUATION  */
-    PRINT = 268,                   /* PRINT  */
-    IF = 269,                      /* IF  */
-    ELSE = 270,                    /* ELSE  */
-    WHILE = 271,                   /* WHILE  */
-    FOR = 272,                     /* FOR  */
-    VAR = 273,                     /* VAR  */
-    NPV = 274,                     /* NPV  */
-    IRR = 275,                     /* IRR  */
-    WACC = 276,                    /* WACC  */
-    EQ = 277,                      /* EQ  */
-    NEQ = 278,                     /* NEQ  */
-    GE = 279,                      /* GE  */
-    LE = 280,                      /* LE  */
-    UMINUS = 283                   /* UMINUS  */
+    BOOL_LITERAL = 261,            /* BOOL_LITERAL  */
+    ENTITY = 262,                  /* ENTITY  */
+    CAP_TABLE = 263,               /* CAP_TABLE  */
+    DEAL = 264,                    /* DEAL  */
+    DEBT_INSTRUMENT = 265,         /* DEBT_INSTRUMENT  */
+    COST_OF_DEBT = 266,            /* COST_OF_DEBT  */
+    COST_OF_EQUITY = 267,          /* COST_OF_EQUITY  */
+    VALUATION = 268,               /* VALUATION  */
+    PRINT = 269,                   /* PRINT  */
+    VAR = 270,                     /* VAR  */
+    IF = 271,                      /* IF  */
+    ELSE = 272,                    /* ELSE  */
+    WHILE = 273,                   /* WHILE  */
+    FOR = 274,                     /* FOR  */
+    INT_TYPE = 275,                /* INT_TYPE  */
+    BOOL_TYPE = 276,               /* BOOL_TYPE  */
+    STRING_TYPE = 277,             /* STRING_TYPE  */
+    NPV = 278,                     /* NPV  */
+    IRR = 279,                     /* IRR  */
+    WACC = 280,                    /* WACC  */
+    EQ = 281,                      /* EQ  */
+    NE = 282,                      /* NE  */
+    GT = 283,                      /* GT  */
+    LT = 284,                      /* LT  */
+    GE = 285,                      /* GE  */
+    LE = 286,                      /* LE  */
+    AND = 287,                     /* AND  */
+    OR = 288,                      /* OR  */
+    NOT = 289,                     /* NOT  */
+    ASSIGN = 290,                  /* ASSIGN  */
+    SEMICOLON = 291,               /* SEMICOLON  */
+    COMMA = 292,                   /* COMMA  */
+    LPAREN = 293,                  /* LPAREN  */
+    RPAREN = 294,                  /* RPAREN  */
+    LBRACE = 295,                  /* LBRACE  */
+    RBRACE = 296,                  /* RBRACE  */
+    LBRACKET = 297,                /* LBRACKET  */
+    RBRACKET = 298,                /* RBRACKET  */
+    UMINUS = 299                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -86,13 +104,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 11 "src/vsharp.y"
+#line 14 "src/vsharp.y"
 
-    double num;
-    char *id;
-    char *str;
+    double      num;
+    char       *id;
+    char       *str;
 
-#line 96 "build/vsharp.tab.h"
+#line 114 "build/vsharp.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
