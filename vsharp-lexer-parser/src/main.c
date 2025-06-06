@@ -1,14 +1,16 @@
-#include <stdio.h>
+#include<stdio.h>
+#include"ast.h"
 
-/* protótipo do parser gerado pelo Bison */
-int yyparse(void);
+extern int yyparse(void);
+extern Node *program_root;
 
-int main(int argc, char **argv)
-{
-    int ret = yyparse();      /* executa análise léxico‑sintática */
-    if (ret == 0)
+int main(){
+    int ret=yyparse();
+    if(ret==0){
         puts("OK: sintaxe valida.");
-    else
+        /* Nesta fase só construímos AST – ainda não executamos */
+    }else{
         puts("ERRO: sintaxe invalida.");
+    }
     return ret;
 }

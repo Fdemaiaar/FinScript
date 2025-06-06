@@ -1,54 +1,39 @@
-# ---------- Variáveis ----------
-CC        := gcc
-FLEX      := win_flex
-BISON     := win_bison
-SRC_DIR   := src
-BUILD_DIR := build
-TARGET    := vsharp
+CC      = gcc
+FLEX    = flex
+BISON   = bison
+BUILD   = build
+SRC     = src
 
-LEX_SRC   := $(BUILD_DIR)/lex.yy.c
-Y_TAB_SRC := $(BUILD_DIR)/vsharp.tab.c
-Y_TAB_HDR := $(BUILD_DIR)/vsharp.tab.h
+OBJS = $(BUILD)/ast.o $(BUILD)/vsharp.tab.o $(BUILD)/lex.yy.o $(BUILD)/main.o
+BIN  = $(BUILD)/vsharp.exe
 
-LEX_OBJ   := $(BUILD_DIR)/lex.yy.o
-Y_TAB_OBJ := $(BUILD_DIR)/vsharp.tab.o
-MAIN_SRC  := $(SRC_DIR)/main.c
-MAIN_OBJ  := $(BUILD_DIR)/main.o
+default: all
 
-# ---------- Alvo principal ----------
-all: $(BUILD_DIR)/$(TARGET).exe
+all: $(BIN)
 
-# ---------- Diretório build ----------
-$(BUILD_DIR):
-	if not exist "$(BUILD_DIR)" mkdir "$(BUILD_DIR)"
+$(BUILD):
+	mkdir -p $(BUILD)
 
-# ---------- Gerar parser ----------
-$(Y_TAB_SRC) $(Y_TAB_HDR): $(SRC_DIR)/vsharp.y | $(BUILD_DIR)
-	$(BISON) -d -o $(Y_TAB_SRC) $(SRC_DIR)/vsharp.y
-	@echo "Bison gerou: $(Y_TAB_SRC) e $(Y_TAB_HDR)"
+$(BUILD)/ast.o: $(SRC)/ast.c $(SRC)/ast.h | $(BUILD)
+	$(CC) -c $< -o $@
 
-# ---------- Gerar scanner ----------
-$(LEX_SRC): $(SRC_DIR)/vsharp.l $(Y_TAB_HDR) | $(BUILD_DIR)
-	$(FLEX) -o $(LEX_SRC) $(SRC_DIR)/vsharp.l
-	@echo "Flex gerou: $(LEX_SRC)"
+$(BUILD)/vsharp.tab.c $(BUILD)/vsharp.tab.h: $(SRC)/vsharp.y | $(BUILD)
+	$(BISON) -d -o $(BUILD)/vsharp.tab.c $<
 
-# ---------- Compilar objetos ----------
-$(Y_TAB_OBJ): $(Y_TAB_SRC)
-	$(CC) -std=c99 -c $< -o $@
+$(BUILD)/vsharp.tab.o: $(BUILD)/vsharp.tab.c | $(BUILD)
+	$(CC) -c $< -o $@
 
-$(LEX_OBJ): $(LEX_SRC)
-	$(CC) -std=c99 -c $< -o $@
+$(BUILD)/lex.yy.c: $(SRC)/vsharp.l $(BUILD)/vsharp.tab.h | $(BUILD)
+	$(FLEX) -o $(BUILD)/lex.yy.c $<
 
-$(MAIN_OBJ): $(MAIN_SRC) | $(BUILD_DIR)
-	$(CC) -std=c99 -c $< -o $@
+$(BUILD)/lex.yy.o: $(BUILD)/lex.yy.c | $(BUILD)
+	$(CC) -c $< -o $@
 
-# ---------- Link final ----------
-$(BUILD_DIR)/$(TARGET).exe: $(Y_TAB_OBJ) $(LEX_OBJ) $(MAIN_OBJ)
-	$(CC) $^ -o $@
-	@echo "Executável criado: $@"
+$(BUILD)/main.o: $(SRC)/main.c $(SRC)/ast.h | $(BUILD)
+	$(CC) -c $< -o $@
 
-# ---------- Limpar ----------
+$(BIN): $(OBJS)
+	$(CC) -o $@ $(OBJS)
+
 clean:
-	if exist "$(BUILD_DIR)" rmdir /s /q "$(BUILD_DIR)"
-
-.PHONY: all clean
+	rm -rf $(BUILD)
