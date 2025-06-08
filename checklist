@@ -1,0 +1,104 @@
+📌 Estado atual do projeto (V-Sharp)
+bash
+Copiar
+Editar
+vsharp-lexer-parser/
+├─ Makefile               → compila tudo no sub-diretório build/
+├─ examples/              → scripts de teste (.vs)
+│  ├─ sanity.vs           → cobre aritmética, arrays, print, while
+│  └─ full.vs             → cobre quase toda a EBNF (hoje falha em holders)
+├─ build/                 → artefactos (criados pelo make)
+└─ src/
+   ├─ vsharp.l            → *lexer* 100 % da EBNF (tokens, datas, “:” etc.)
+   ├─ vsharp.y            → *parser* ★ falta suporte completo a:
+   │   · NODE_CALL (npv/irr/wacc, prints variádicos já ok)
+   │   · if/while/for reais (gera NOP)
+   │   · blocos internos de entity/cap_table + lista de pairs
+   ├─ ast.h / ast.c       → AST heterogénea  
+   │   · ✔ NODE_ARRAY/NODE_PAIR, literais, print variádico  
+   │   · ★ falta NODE_CALL, NODE_IF, NODE_WHILE, NODE_FOR, blocos de domínio
+   ├─ sem.h / sem.c       → Analisador semântico  
+   │   · variáveis + tipos primitivos/array  
+   │   · ★ não valida pairs nem npv/irr/wacc nem domínio
+   ├─ irgen.h / irgen.c   → Geração LLVM **mínima**  
+   │   · int/double, print, arrays (heap)  
+   │   · ★ não emite if/while, chamadas financeiras, strings globais param.
+   ├─ runtime.c           → `malloc`, `npv`, `irr`, `wacc`
+   └─ main.c              → dirige parse → sem → ir → `out.ll`
+✅ Já implementado
+Fase	Cobertura
+Léxico	100 % de tokens (ident, número, string, date, “:// …”)
+Sintaxe	var/aritm., arrays, strings, print variádico, comparações, metric_call (ainda NOP)
+AST	Literais primitivos, arrays heterogéneos, pares "k":expr, print variádico
+Semântica	Tipos primários + promoção int→float, escopos encadeados
+Runtime	npv, irr, wacc, make_array
+IR	Inteiros/doubles, prints, arrays → heap
+
+🟥 O que falta p/ versão final
+Prioridade	Item	Onde mexer	Observação
+①	Chamadas a funções npv/irr/wacc	ast.[hc] + vsharp.y → NODE_CALL ; irgen.c gera call	valida nº/ tipo de args no sem.c
+②	Fluxo de controlo if / while / for	ast.[hc] + vsharp.y → NODE_IF, NODE_WHILE, NODE_FOR ; irgen.c emite labels/br	
+③	Pairs no parser ("Alice": 5)	regra pair_list, token COLON já existe — basta ligar ao NODE_PAIR	semântica: string chave ≠ vazia
+④	Blocos de domínio (share_classes {…})	gerar sub-árvore (NODE_ENTITY, etc.) ou manter NOP mas aceitar pares aninhados	validações cruzadas depois
+⑤	Strings globais reais	irgen.c gerar @.strN em todos prints (já esboçado)	
+⑥	Verificação npv/irr/wacc	em sem.c checar aridade (2,1,4) e tipos float/array	
+⑦	For completo	parse + irgen (contador, comparação, incremento)	opcional para MVP
+
+🗂️ Alteração única por arquivo (road-map)
+Ordem	Arquivo	Alterar uma vez	Conteúdo a adicionar
+1	ast.h / ast.c	➕ NODE_CALL, NODE_IF, NODE_WHILE, NODE_FOR e respectivos campos (call, if_s, loop)	construtores: new_call(), new_if(), new_while()…
+2	vsharp.y	ligar:
+• chamadas → new_call()
+• if/while/for reais (usam blocos)
+• pair_list → new_pair()
+• remover NOPs correspondentes	manter precedência; atualizar %type
+3	sem.c	(a) empilhar tabs nos novos blocos
+(b) infer_expr trata NODE_CALL (retorna T_FLOAT)
+(c) verifica pairs (key string, value válido)	erros → error_cnt++
+4	irgen.c	• caso NODE_CALL: declare @npv/@irr/@wacc, faz promoção int→double, passa array* / cont.
+• emit_if, emit_while com labels
+• imprime strings com %s também	arrays já prontos
+5	runtime.c	nada (já ok)	
+6	main.c	só se quiser CLI para passar ficheiro; não obrigatório	
+7	Makefile	já compila tudo — sem mudanças	
+
+(mexendo uma única vez em cada arquivo acima completamos a EBNF).
+
+🏁 Passo-a-passo até a “versão final”
+AST – acrescentar novos tipos & construtores.
+
+Parser – gerar esses nós; remover NODE_NOPs.
+
+Semântica – validar:
+
+variáveis, tipos, promoção;
+
+calls npv/irr/wacc (2, 1, 4 args);
+
+holders "str": num;
+
+futuramente — coerência cap_table ↔ entity.
+
+IR –
+
+strings globais %s;
+
+call double @npv(double, double*, i32) etc.;
+
+if/while com icmp + br;
+
+arrays já funcionam (malloc, store).
+
+Testes – examples/full.vs deve:
+
+compilar sem erros;
+
+gerar out.ll que imprime resultado plausível;
+
+lli build/out.ll roda (se LLVM instalado).
+
+Polimento – mensagens, for/scope extra, docs no README.
+
+Siga a tabela “Alteração única por arquivo”: depois de editar cada
+fonte apenas uma vez, invoque make ➔ todos os scripts-exemplo
+devem compilar e executar, concluindo a versão final do compilador
