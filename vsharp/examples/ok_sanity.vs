@@ -7,7 +7,7 @@ print("y =", y)         ;
 // 2 · Array literal + chamada npv
 var cf  = [ -100 , 40 , 40 , 40 ]          ;
 var r   = 0.10                            ;
-var val = npv(r, cf)                      ;
+var val = npv(r, cf);
 print("NPV =", val)                       ;
 
 // 3 · Loop while – contagem regressiva

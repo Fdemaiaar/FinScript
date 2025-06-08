@@ -24,7 +24,122 @@ LLVM-IR e executa _just-in-time_ com **`lli`**.
 <details>
 <summary>Clique para expandir a gramática</summary>
 
-[conteúdo completo da EBNF – idêntico ao enviado ao professor]
+```ebnf
+###############################################################################
+# 2.1  Estrutura de programa
+###############################################################################
+<program>   ::= { <statement> }
+<statement> ::=
+      <entity_decl> | <cap_table_decl> | <equity_deal_decl> | <debt_decl>
+    | <cost_debt_decl> | <cost_equity_decl> | <valuation_decl> | <metric_decl>
+    | <print_stmt> | <var_decl> | <if_stmt> | <while_stmt> | <for_stmt>
+
+<var_decl>  ::= "var" <ident> [ "=" <expression> ] ";"
+<if_stmt>   ::= "if" "(" <expression> ")" <block> [ "else" <block> ]
+<while_stmt>::= "while" "(" <expression> ")" <block>
+<for_stmt>  ::= "for" "(" [ <var_decl> | <expression> ] ";"
+                         [ <expression> ] ";" [ <expression> ] ")" <block>
+<block>     ::= "{" { <statement> } "}"
+
+###############################################################################
+# 2.2  Entidades
+###############################################################################
+<entity_decl> ::= "entity" <ident> "{" <entity_body> "}"
+<entity_body> ::= "legal_name" "=" <string> ";"
+                | "jurisdiction" "=" <ident> ";"
+                | "share_classes" "{" { <share_class> } "}"
+<share_class> ::= <ident> "{"
+                    "votes_per_share" "=" <number> ";"
+                    "dividend_pref"   "=" <number> ";"
+                  "}"
+
+###############################################################################
+# 2.3  Cap table
+###############################################################################
+<cap_table_decl> ::= "cap_table" <ident> "{" { <cap_section> } "}"
+<cap_section>    ::= <ident> "{"
+                       "holders" "=" "[" <holder_list> "]" ";"
+                     "}"
+<holder_list>    ::= <holder> { "," <holder> }
+<holder>         ::= <string> ":" <number>
+
+###############################################################################
+# 2.4  Deals de equity e dívida
+###############################################################################
+<equity_deal_decl> ::= "deal" <ident> "{"
+                        "type"            "=" "Equity" ";"
+                        "issuer"          "=" <ident> ";"
+                        "amount"          "=" <number> ";"
+                        "price_per_share" "=" <number> ";"
+                        "settlement_date" "=" <date>   ";"
+                        "underwriters"    "=" "[" <string_list> "]" ";"
+                      "}"
+<debt_decl> ::= "debt_instrument" <ident> "{"
+                 "issuer"       "=" <ident> ";"
+                 "principal"    "=" <number> ";"
+                 "coupon_rate"  "=" <number> ";"
+                 "maturity"     "=" <date>   ";"
+                 "payment_freq" "=" <ident>  ";"
+               "}"
+
+###############################################################################
+# 2.5  Custos de capital
+###############################################################################
+<cost_debt_decl> ::= "cost_of_debt" <ident> "{"
+                      "rating"   "=" <string> ";"
+                      "spread"   "=" <number> ";"
+                      "maturity" "=" <date>   ";"
+                    "}"
+<cost_equity_decl> ::= "cost_of_equity" <ident> "{"
+                        "beta" "=" <number> ";"
+                        "rf"   "=" <number> ";"
+                        "rm"   "=" <number> ";"
+                      "}"
+
+###############################################################################
+# 2.6  Valuation & métricas
+###############################################################################
+<valuation_decl> ::= "valuation" <ident> "{"
+                      "cashflows" "=" "[" <number_list> "]" ";"
+                      "rate"      "=" <expression> ";"
+                      "result"    "=" <ident_call> ";"
+                    "}"
+<metric_decl> ::= <ident> "=" <metric_call> ";"
+<metric_call> ::= "npv"  "(" <arg_list> ")"
+                | "irr"  "(" <arg_list> ")"
+                | "wacc" "(" <arg_list> ")"
+
+###############################################################################
+# 2.7  Expressões
+###############################################################################
+<expression> ::= <or_expr>
+<or_expr>    ::= <and_expr> { "||" <and_expr> }
+<and_expr>   ::= <cmp_expr> { "&&" <cmp_expr> }
+<cmp_expr>   ::= <arith_expr> [ ( "==" | "!=" | ">" | "<" | ">=" | "<=" ) <arith_expr> ]
+<arith_expr> ::= <term> { ( "+" | "-" ) <term> }
+<term>       ::= <factor> { ( "*" | "/" ) <factor> }
+<factor>     ::= { "+" | "-" | "!" } (
+                   <number> | <ident> | <ident_call> | "(" <expression> ")"
+                 )
+
+###############################################################################
+# 2.8  Outras produções utilitárias
+###############################################################################
+<ident_call>  ::= <ident> "(" [ <arg_list> ] ")"
+<arg_list>    ::= <expression> { "," <expression> }
+<string_list> ::= <string> { "," <string> }
+<number_list> ::= <number> { "," <number> }
+
+###############################################################################
+# 2.9  Terminais
+###############################################################################
+<ident>  ::= letter { letter | digit | "_" }
+<number> ::= digit { digit } [ "." digit { digit } ]
+<string> ::= "\"" { any_char_except_quote } "\""
+<date>   ::= digit digit digit digit "-" digit digit "-" digit digit
+letter   ::= "A"…"Z" | "a"…"z"
+digit    ::= "0"…"9"
+```
 </details>
 
 ---

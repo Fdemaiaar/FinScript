@@ -1,0 +1,3 @@
+ok
+IR gerado em build/out.ll
+Executando JIT com LLVM…
