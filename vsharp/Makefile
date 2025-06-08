@@ -1,18 +1,18 @@
 ###############################################################################
-# ValuationSharp – build (Windows-first)
+# ValuationSharp – build (Windows-first, filtro de logs restaurado)
 ###############################################################################
 
-# ---------------------------------------------------------------------------
-# 0. Se build/ não existir, cria
-# ---------------------------------------------------------------------------
 BUILD = build
 SRC   = src
 
+# ---------------------------------------------------------------------------
+# cria build/ se faltar
+# ---------------------------------------------------------------------------
 $(BUILD):
 	@if not exist "$(BUILD)" mkdir "$(BUILD)"
 
 # ---------------------------------------------------------------------------
-# 1. Ferramentas – Windows como padrão
+# ferramentas
 # ---------------------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
 FLEX  ?= win_flex
@@ -23,7 +23,7 @@ RM    = del /Q
 RMDIR = if exist "$(1)" rmdir /S /Q "$(1)"
 CAT   = type
 NULL  = >nul 2>&1
-RUN   = build\\vsharp.exe               # executável gerado
+RUN   = build\\vsharp.exe
 else
 FLEX  ?= flex
 BISON ?= bison
@@ -40,23 +40,22 @@ CFLAGS += -Isrc -I$(BUILD) -Wall -Wextra
 LDFLAGS = -lm
 
 # ---------------------------------------------------------------------------
-# 2. Objetos
+# objetos
 # ---------------------------------------------------------------------------
 OBJ = \
- $(BUILD)/ast.o        $(BUILD)/sem.o       $(BUILD)/irgen.o \
- $(BUILD)/runtime.o    \
- $(BUILD)/vsharp.tab.o $(BUILD)/lex.yy.o    $(BUILD)/main.o
+ $(BUILD)/ast.o $(BUILD)/sem.o $(BUILD)/irgen.o $(BUILD)/runtime.o \
+ $(BUILD)/vsharp.tab.o $(BUILD)/lex.yy.o $(BUILD)/main.o
 
 BIN = $(BUILD)/vsharp.exe
 
 # ---------------------------------------------------------------------------
-# 3. Alvos principais
+# alvos principais
 # ---------------------------------------------------------------------------
 .PHONY: all clean test
-all: $(BIN) $(BUILD)/runtime.bc
+all: | $(BUILD) $(BIN) $(BUILD)/runtime.bc
 
 # ---------------------------------------------------------------------------
-# 4. Bison
+# bison
 # ---------------------------------------------------------------------------
 $(BUILD)/vsharp.tab.c $(BUILD)/vsharp.tab.h: $(SRC)/vsharp.y | $(BUILD)
 	$(BISON) -d -o $(@D)/vsharp.tab.c $<
@@ -65,7 +64,7 @@ $(BUILD)/vsharp.tab.o: $(BUILD)/vsharp.tab.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ---------------------------------------------------------------------------
-# 5. Flex
+# flex
 # ---------------------------------------------------------------------------
 $(BUILD)/lex.yy.c: $(SRC)/vsharp.l $(BUILD)/vsharp.tab.h | $(BUILD)
 	$(FLEX) -o $@ $<
@@ -74,34 +73,33 @@ $(BUILD)/lex.yy.o: $(BUILD)/lex.yy.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ---------------------------------------------------------------------------
-# 6. Fontes C genéricos
+# fontes C
 # ---------------------------------------------------------------------------
 $(BUILD)/%.o: $(SRC)/%.c | $(BUILD)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# irgen depende do header de tokens
+# irgen precisa do header dos tokens
 $(BUILD)/irgen.o: $(SRC)/irgen.c $(BUILD)/vsharp.tab.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ---------------------------------------------------------------------------
-# 7. Link
+# link
 # ---------------------------------------------------------------------------
 $(BIN): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 	@echo ">> Executavel gerado: $@"
 
 # ---------------------------------------------------------------------------
-# 8. runtime.bc (LLVM)
+# runtime.bc
 # ---------------------------------------------------------------------------
 $(BUILD)/runtime.bc: $(SRC)/runtime.c | $(BUILD)
 	$(CLANG) -emit-llvm -c -o $@ $<
 	@echo ">> Bitcode gerado: $@"
 
 # ---------------------------------------------------------------------------
-# 9. Testes automatizados  (versão original)
+# testes
 # ---------------------------------------------------------------------------
 SCRATCH = $(BUILD)\scratch
-
 $(SCRATCH):
 	@if not exist "$(SCRATCH)" mkdir "$(SCRATCH)"
 
@@ -109,22 +107,21 @@ test: all | $(SCRATCH)
 ifeq ($(OS),Windows_NT)
 	@echo === Testes de sucesso ===
 	@for %%f in (examples\*.vs) do ( \
-		copy /Y "%%f" "$(SCRATCH)\test.vs" >nul & \
-		$(CAT) "$(SCRATCH)\test.vs" | $(RUN) > "$(SCRATCH)\test.out" & \
-		fc /N "%%~dpnf.expected" "$(SCRATCH)\test.out" >nul && ( \
-			del "$(SCRATCH)\test.out" \
+		$(CAT) "%%f" | $(RUN) | \
+		findstr /V /R /C:"^IR gerado" /C:"^Executando JIT" \
+		> "$(SCRATCH)\out.tmp" && ( \
+			fc /N "%%~dpnf.expected" "$(SCRATCH)\out.tmp" >nul 2>&1 \
+			&& $(RM) "$(SCRATCH)\out.tmp" \
 		) || ( \
 			echo ❌ Falha em %%f & \
 			echo ----- ESPERADO ----- & $(CAT) "%%~dpnf.expected" & \
-			echo ----- OBTIDO  ------ & $(CAT) "$(SCRATCH)\test.out" & \
+			echo ----- OBTIDO  ------ & $(CAT) "$(SCRATCH)\out.tmp" & \
 			exit /b 1 \
 		) \
 	)
 	@echo === Testes que DEVEM falhar ===
 	@for %%f in (examples\error\*.vs) do ( \
-		copy /Y "%%f" "$(SCRATCH)\err.vs" >nul & \
-		echo ==> %%f (erro esperado) & \
-		$(CAT) "$(SCRATCH)\err.vs" | $(RUN) $(NULL) && ( \
+		$(CAT) "%%f" | $(RUN) $(NULL) && ( \
 			echo ❌ Nenhum erro em %%f & exit /b 1 \
 		) || echo ✓ Erro detectado \
 	)
