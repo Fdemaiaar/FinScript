@@ -271,7 +271,9 @@ versionada.
 
 ```bash
 # 1. Compilar
+make clean
 make                 # cria build/vsharp.exe (+ objetos)
+make test
 
 # 2. Rodar um script
 # · Windows
