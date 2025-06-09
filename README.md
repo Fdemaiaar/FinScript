@@ -246,7 +246,8 @@ vsharp/
 ├─ Makefile             # build cross-plataforma (GCC + Flex/Bison)
 ├─ README.md            # este documento
 ├─ examples/
-│  ├─ sanity.vs         # teste mínimo
+│  ├─ examples/         # exemplos de scripts que devem dar erro
+│  └─ sanity.vs         # teste mínimo (operações matemáticas) 
 │  └─ full.vs           # script que cobre (quase) toda a gramática
 └─ src/
    ├─ ast.[hc]          # árvore de sintaxe
@@ -258,7 +259,7 @@ vsharp/
    └─ main.c            # driver: parse → sem → IR → lli
 ```
 
-A pasta **`build/`** é criada automaticamente pelo `make` e **não** deve ser
+A pasta **`build/`** é criada automaticamente pelo `make` e os arquivos executáveis pelo `make test` e **não** deve ser
 versionada.
 
 ---
