@@ -246,9 +246,10 @@ vsharp/
 ├─ Makefile             # build cross-plataforma (GCC + Flex/Bison)
 ├─ README.md            # este documento
 ├─ examples/
-│  ├─ examples/         # exemplos de scripts que devem dar erro
-│  └─ sanity.vs         # teste mínimo (operações matemáticas) 
-│  └─ full.vs           # script que cobre (quase) toda a gramática
+│  ├─ error/            # exemplos de scripts que devem dar erro
+│  └─ ok_sanity.vs      # teste mínimo (operações matemáticas e funções nativas) 
+│  └─ ok_full.vs        # script que cobre (quase) toda a gramática
+│  └─ ...               # mais scripts de teste
 └─ src/
    ├─ ast.[hc]          # árvore de sintaxe
    ├─ sem.[hc]          # verificação semântica
