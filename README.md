@@ -279,9 +279,11 @@ make                 # cria build/vsharp.exe (+ objetos)
 make test
 
 # 2. Rodar um script
+
 # · Windows
 type examples\ok_sanity.vs | build\vsharp.exe
 # · Linux
+
 cd vsharp
 sudo apt update
 sudo apt install clang llvm
