@@ -289,7 +289,7 @@ make clean
 make               # deve terminar liso
 ls build/vsharp    # tem que existir
 chmod +x build/vsharp   # só se não estiver executável
-./build/vsharp < examples/sanity.vs   # ou o nome que existir
+./build/vsharp < examples/ok_sanity.vs   # ou o nome que existir
 
 
 # 3. Executar arquivo gerado diretamente no lli (opcional)
