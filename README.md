@@ -259,7 +259,7 @@ vsharp/
    └─ main.c            # driver: parse → sem → IR → lli
 ```
 
-A pasta **`build/`** é criada automaticamente pelo `make` e os arquivos executáveis pelo `make test` e **não** deve ser
+A pasta **`build/`** é criada automaticamente pelo `make` assim como os arquivos executáveis, e **não** deve ser
 versionada.
 
 ---
@@ -271,6 +271,8 @@ versionada.
 > LLVM 20.1.6 portátil.
 
 ```bash
+cd vsharp
+
 # 1. Compilar
 make clean
 make                 # cria build/vsharp.exe (+ objetos)
@@ -278,9 +280,17 @@ make test
 
 # 2. Rodar um script
 # · Windows
-type examples\sanity.vs | build\vsharp.exe
-# · Unix / macOS
-cat  examples/sanity.vs | ./build/vsharp
+type examples\ok_sanity.vs | build\vsharp.exe
+# · Linux
+cd vsharp
+sudo apt update
+sudo apt install clang llvm
+make clean
+make               # deve terminar liso
+ls build/vsharp    # tem que existir
+chmod +x build/vsharp   # só se não estiver executável
+./build/vsharp < examples/ok_sanity.vs   # ou o nome que existir
+
 
 # 3. Executar arquivo gerado diretamente no lli (opcional)
 lli -extra-module build/runtime.bc build/out.ll
