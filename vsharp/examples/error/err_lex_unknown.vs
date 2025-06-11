@@ -1,1 +1,2 @@
-== (erro esperado
+var x = 10;
+@
