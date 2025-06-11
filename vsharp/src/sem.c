@@ -77,6 +77,10 @@ static Type infer_array(Node *n)
 }
 static Type infer_pair(Node *n)
 {
+    if(n->v.pair.key[0] == '\0') {
+        fprintf(stderr, "chave vazia em par\n");
+        error_cnt++;
+    }
     Type v = infer_expr(n->v.pair.value);
     if(v==T_INVALID){
         fprintf(stderr,"Erro semântico em par \"%s\"\n",n->v.pair.key);
