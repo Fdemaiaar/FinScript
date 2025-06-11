@@ -7,7 +7,7 @@ vsharp-lexer-parser/
 ├─ examples/              → scripts de teste (.vs)
 │  ├─ sanity.vs           → cobre aritmética, arrays, print, while
 │  └─ full.vs             → cobre quase toda a EBNF (hoje falha em holders)
-├─ build/                 → artefactos (criados pelo make)
+├─ build/                 → artefatos (criados pelo make)
 └─ src/
    ├─ vsharp.l            → *lexer* 100 % da EBNF (tokens, datas, “:” etc.)
    ├─ vsharp.y            → *parser* ★ falta suporte completo a:

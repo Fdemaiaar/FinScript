@@ -1,1 +1,1 @@
-== (erro esperado
+print(y);

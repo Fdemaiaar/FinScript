@@ -244,7 +244,7 @@ WACC final: 0.091667
 ```
 vsharp/
 ├─ Makefile             # build cross-plataforma (GCC + Flex/Bison)
-├─ README.md            # este documento
+├─ README.md            # (na raiz deste repositório)
 ├─ examples/
 │  ├─ error/            # exemplos de scripts que devem dar erro
 │  └─ ok_sanity.vs      # teste mínimo (operações matemáticas e funções nativas) 
