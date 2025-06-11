@@ -149,12 +149,35 @@ static Type infer_expr(Node *n)
         }
 
         /* unário */
-        case NODE_UNOP:  return infer_expr(n->v.un.expr);
+        case NODE_UNOP:
+            if(n->v.un.op == NOT){
+                Type t = infer_expr(n->v.un.expr);
+                if(t==T_INVALID){
+                    error_cnt++;
+                }
+                return T_BOOL;
+            }
+            return infer_expr(n->v.un.expr);
 
         /* binário */
         case NODE_BINOP:{
             Type l = infer_expr(n->v.bin.lhs);
             Type r = infer_expr(n->v.bin.rhs);
+            int op = n->v.bin.op;
+            if(op==AND || op==OR){
+                if(promote(l,r)==T_INVALID){
+                    fprintf(stderr,"tipos inválidos em operação lógica\n");
+                    error_cnt++;
+                }
+                return T_BOOL;
+            }
+            if(op==EQ||op==NE||op==GT||op==LT||op==GE||op==LE){
+                if(promote(l,r)==T_INVALID){
+                    fprintf(stderr,"tipos inválidos em comparação\n");
+                    error_cnt++;
+                }
+                return T_BOOL;
+            }
             return promote(l,r);
         }
 
