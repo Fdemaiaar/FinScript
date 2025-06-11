@@ -218,9 +218,9 @@ while (rate <= 0.15) {                    // até 15%
 }
 
 // 7. Impressão final de métricas
-print("IRR final:", irr1);               
-print("WACC final:", wacc1);             
-````
+print("IRR final:", irr1);
+print("WACC final:", wacc1);
+```
 
 ### Execução típica
 
@@ -247,8 +247,8 @@ vsharp/
 ├─ README.md            # (na raiz deste repositório)
 ├─ examples/
 │  ├─ error/            # exemplos de scripts que devem dar erro
-│  └─ ok_sanity.vs      # teste mínimo (operações matemáticas e funções nativas) 
-│  └─ ok_full.vs        # script que cobre (quase) toda a gramática
+│  ├─ ok_sanity.vs      # teste mínimo (operações matemáticas e funções nativas)
+│  ├─ ok_full.vs        # script que cobre (quase) toda a gramática
 │  └─ ...               # mais scripts de teste
 └─ src/
    ├─ ast.[hc]          # árvore de sintaxe
